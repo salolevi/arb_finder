@@ -39,16 +39,23 @@ where = ["src"]
 target-version = "py312"
 line-length = 100
 
+[tool.ruff.lint.isort]
+known-first-party = ["arb_finder"]
+
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "UP", "B", "SIM", "TCH", "RUF", "ASYNC", "C4", "PT"]
+# TCH (type-checking imports) dropped: SQLAlchemy 2.0 evaluates Mapped[] annotations
+# at runtime via get_type_hints(), so stdlib/third-party imports must not be gated.
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF", "ASYNC", "C4", "PT"]
 ignore = []
 
 [tool.mypy]
 strict = true
 python_version = "3.12"
 mypy_path = "src"
+plugins = ["sqlalchemy.ext.mypy.plugin"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 pythonpath = ["src"]
