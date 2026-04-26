@@ -50,7 +50,7 @@ def upgrade() -> None:
         sa.Column("hostname", sa.String(255), nullable=False),
         sa.Column(
             "source_kind",
-            sa.Enum(name="source_kind_enum", create_type=False),
+            postgresql.ENUM(name="source_kind_enum", create_type=False),
             nullable=False,
         ),
         sa.Column(
@@ -78,16 +78,16 @@ def upgrade() -> None:
         ),
         sa.Column(
             "market_family",
-            sa.Enum(name="market_family_enum", create_type=False),
+            postgresql.ENUM(name="market_family_enum", create_type=False),
             nullable=False,
         ),
         sa.Column(
-            "period", sa.Enum(name="period_enum", create_type=False), nullable=False
+            "period", postgresql.ENUM(name="period_enum", create_type=False), nullable=False
         ),
         sa.Column("line_value", sa.Numeric(10, 4), nullable=True),
         sa.Column(
             "selection_code",
-            sa.Enum(name="selection_code_enum", create_type=False),
+            postgresql.ENUM(name="selection_code_enum", create_type=False),
             nullable=False,
         ),
         sa.Column("odds_decimal", sa.Numeric(10, 4), nullable=False),
@@ -131,11 +131,11 @@ def upgrade() -> None:
         sa.Column("kickoff_utc", sa.TIMESTAMP(timezone=True), nullable=False),
         sa.Column(
             "market_family",
-            sa.Enum(name="market_family_enum", create_type=False),
+            postgresql.ENUM(name="market_family_enum", create_type=False),
             nullable=False,
         ),
         sa.Column(
-            "period", sa.Enum(name="period_enum", create_type=False), nullable=False
+            "period", postgresql.ENUM(name="period_enum", create_type=False), nullable=False
         ),
         sa.Column("line_value", sa.Numeric(10, 4), nullable=True),
         sa.Column("implied_sum", sa.Numeric(10, 6), nullable=False),
@@ -144,7 +144,7 @@ def upgrade() -> None:
         sa.Column("total_stake", sa.Numeric(12, 2), nullable=False),
         sa.Column(
             "state",
-            sa.Enum(name="opportunity_state_enum", create_type=False),
+            postgresql.ENUM(name="opportunity_state_enum", create_type=False),
             nullable=False,
             server_default=sa.text("'new'"),
         ),
@@ -174,7 +174,7 @@ def upgrade() -> None:
         sa.Column("jurisdiction", sa.String(32), nullable=False),
         sa.Column(
             "selection_code",
-            sa.Enum(name="selection_code_enum", create_type=False),
+            postgresql.ENUM(name="selection_code_enum", create_type=False),
             nullable=False,
         ),
         sa.Column("odds_decimal", sa.Numeric(10, 4), nullable=False),
@@ -197,7 +197,7 @@ def upgrade() -> None:
         sa.Column("telegram_message_id", sa.BigInteger, nullable=True),
         sa.Column(
             "state",
-            sa.Enum(name="opportunity_state_enum", create_type=False),
+            postgresql.ENUM(name="opportunity_state_enum", create_type=False),
             nullable=False,
         ),
         sa.Column("dedupe_hash", sa.String(64), nullable=False),
