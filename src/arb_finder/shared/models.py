@@ -68,6 +68,13 @@ class OddsSnapshot(Base):
 
     __tablename__ = "odds_snapshot"
     __table_args__ = (
+        # TimescaleDB requires every unique index (including PK) to include the
+        # partition column. PK is (snapshot_id, fetched_at_utc); snapshot_id is
+        # still unique by application-level uuid4 guarantee.
+        sa.PrimaryKeyConstraint("snapshot_id", "fetched_at_utc"),
+        # Non-unique index on snapshot_id alone — safe for hypertables, supports
+        # lookups from arb_leg.snapshot_id.
+        sa.Index("ix_odds_snapshot_snapshot_id", "snapshot_id"),
         sa.Index(
             "ix_odds_snapshot_operator_fetched",
             "operator_brand",
@@ -83,9 +90,7 @@ class OddsSnapshot(Base):
         sa.Index("ix_odds_snapshot_raw_hash", "raw_hash"),
     )
 
-    snapshot_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    snapshot_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), default=uuid.uuid4)
     operator_brand: Mapped[str] = mapped_column(sa.String(64))
     jurisdiction: Mapped[str] = mapped_column(sa.String(32))
     hostname: Mapped[str] = mapped_column(sa.String(255))

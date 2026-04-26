@@ -100,6 +100,13 @@ def test_arb_opportunity_default_state() -> None:
     assert opp.confirmed_at_utc is None
 
 
+def test_odds_snapshot_composite_pk() -> None:
+    # TimescaleDB requires the partition column (fetched_at_utc) in every unique
+    # index, so the PK must be composite.
+    pk_cols = {c.name for c in OddsSnapshot.__table__.primary_key.columns}
+    assert pk_cols == {"snapshot_id", "fetched_at_utc"}
+
+
 def test_arb_leg_no_fk_to_hypertable() -> None:
     # snapshot_id exists as a plain UUID column (no FK) — this is intentional
     cols = {c.name for c in ArbLeg.__table__.columns}

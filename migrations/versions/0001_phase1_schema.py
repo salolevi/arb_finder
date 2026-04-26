@@ -44,7 +44,9 @@ def upgrade() -> None:
     # pointing at it (TimescaleDB limitation).
     op.create_table(
         "odds_snapshot",
-        sa.Column("snapshot_id", postgresql.UUID(as_uuid=True), primary_key=True),
+        # TimescaleDB requires every unique constraint (including PK) to include
+        # the partition column. Composite PK satisfies that requirement.
+        sa.Column("snapshot_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("operator_brand", sa.String(64), nullable=False),
         sa.Column("jurisdiction", sa.String(32), nullable=False),
         sa.Column("hostname", sa.String(255), nullable=False),
@@ -94,11 +96,16 @@ def upgrade() -> None:
         sa.Column("source_url", sa.Text, nullable=False),
         sa.Column("raw_hash", sa.String(64), nullable=False),
         sa.Column("raw_payload", postgresql.JSONB, nullable=True),
+        sa.PrimaryKeyConstraint("snapshot_id", "fetched_at_utc"),
     )
 
     # Promote to TimescaleDB hypertable (partitioned by time)
     op.execute("SELECT create_hypertable('odds_snapshot', 'fetched_at_utc')")
 
+    # Non-unique index on snapshot_id alone — hypertables only allow unique
+    # indexes that include the partition column, so uniqueness is guaranteed
+    # by application-level uuid4 generation instead.
+    op.create_index("ix_odds_snapshot_snapshot_id", "odds_snapshot", ["snapshot_id"])
     op.create_index(
         "ix_odds_snapshot_operator_fetched",
         "odds_snapshot",
